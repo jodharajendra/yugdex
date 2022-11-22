@@ -1,3 +1,4 @@
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import React, { useState, useEffect } from "react";
 
 
@@ -65,6 +66,7 @@ const StakingPage = () => {
                 <span class="text-white">$00.000</span>
               </div>
             </div>
+          <ConnectButton></ConnectButton>
           </div>
           <div class="table-responsive">
             <table class="table">
