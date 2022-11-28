@@ -13,6 +13,9 @@ const StakingPage = () => {
   const [buyCoinBal, setBuyCoinBal] = useState(0);
   const [buyPrice, setBuyPrice] = useState(0);
 
+  const [userAllowance, setUserAllowance] = useState('');
+
+
   const [coinAmount, setCoinAmount] = useState('')
 
   const [smartContractPlan, setSmartContractPlan] = useState('')
@@ -47,16 +50,23 @@ const StakingPage = () => {
   };
 
 
+
+
   const checkAllowance = async () => {
     alert('checkAllowance')
     const address = signer.getAddress()
     let allowance = await token.allowance(address, stakingAddress)
     allowance = parseInt(allowance, 10)
-    console.log(allowance, 'allowanceallowanceallowance');
+
+    setUserAllowance(allowance);
 
     return allowance
 
   }
+
+
+  console.log(userAllowance, 'userAllowance');
+
 
   const approveStakingContract = async (amount) => {
     const address = signer.getAddress()
@@ -87,11 +97,7 @@ const StakingPage = () => {
   }
 
 
-  const handleStacking = (smartContractPlan, coinAmount) => {
 
-    console.log(smartContractPlan,'smartContractPlan');
-    console.log(coinAmount,'coinAmount');
-  }
 
 
 
@@ -217,7 +223,19 @@ const StakingPage = () => {
               </small>
               <div className="row g-1 mt-3">
                 <div className="col-md-12 m-auto px-1">
-                  <button type="button" class="btn btn-gradient w-100" onClick={() => handleStacking(smartContractPlan, coinAmount)}><span className="m-auto" >Stake </span></button>
+
+                  {userAllowance > coinAmount ?
+
+                    <button type="button" class="btn btn-gradient w-100" onClick={() => approveStakingContract(smartContractPlan, coinAmount)}>
+                      <span className="m-auto" >Approve Stacking </span>
+                    </button> :
+
+                    <button type="button" class="btn btn-gradient w-100" onClick={() => stakeFunction(smartContractPlan, coinAmount)}>
+                      <span className="m-auto" >Stake </span>
+                    </button>
+
+                  }
+                  
                 </div>
               </div>
             </div>
