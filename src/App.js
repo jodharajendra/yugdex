@@ -64,12 +64,12 @@ const bscTestnet = {
 };
 
 const { chains, provider } = configureChains(
-  [bsc, chain.mainnet],
+  [chain.mainnet, bscTestnet],
   [
     infuraProvider({ apiKey: "dab1364f1304408b9d44f36d0773cf0a" }),
     jsonRpcProvider({
       rpc: (chain) => {
-        if (chain.id !== bsc.id) return null;
+        if (chain.id !== bscTestnet.id) return null;
         return { http: chain.rpcUrls.default };
       },
     }),
