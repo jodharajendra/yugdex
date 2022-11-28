@@ -1,6 +1,8 @@
 import { ethers } from "ethers";
 import { address, abi } from "../config";
 
+
+
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 const signer = provider.getSigner()
 
@@ -27,9 +29,9 @@ export const approveStakingContract = async (amount) => {
     decimal = parseInt(decimal, 10)
 
     amount = amount * 10 ** decimal
-    amountInHex = "0x" + amount.toString(16)
+   let amountInHex = "0x" + amount.toString(16)
 
-    const tx = await token.approve(stakeAddress, amountInHex)
+    const tx = await token.approve(stakingAddress, amountInHex)
     console.log("approve tx: ",tx)
 }
 
@@ -40,9 +42,9 @@ export const stakeFunction = async (amount, poolId) => {
     decimal = parseInt(decimal, 10)
 
     amount = amount * 10 ** decimal
-    amountInHex = "0x" + amount.toString(16)
+   let amountInHex = "0x" + amount.toString(16)
 
-    poolInHex = "0x" + poolId.toString(16)
+   let poolInHex = "0x" + poolId.toString(16)
 
     const tx = await stake.stakeTokens(amountInHex, poolInHex)
     console.log("stake tx: ", tx)
