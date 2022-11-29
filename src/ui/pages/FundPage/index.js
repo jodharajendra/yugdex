@@ -106,6 +106,7 @@ const FundPage = () => {
     useEffect(() => {
         getFundData();
         Estimatedportfolio();
+        handleGetRecive();
     }, []);
 
     const getFundData = async () => {
@@ -283,6 +284,13 @@ const FundPage = () => {
             }
         });
     }
+
+
+
+    const handleGetRecive = async () => {
+        await HomeService.getReciveOrder().then(async result => {
+        });
+    };
 
 
     // console.log(selectedDeposit, 'selectedDeposit');

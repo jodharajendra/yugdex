@@ -2,6 +2,9 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { address, abi } from "../../../config";
+import { $ } from "react-jquery-plugin";
+import LoaderHelper from "../../../customComponent/Loading/LoaderHelper";
+import { alertErrorMessage, alertSuccessMessage, alertSuccessMessageTrade } from "../../../customComponent/CustomAlertMessage";
 
 const StakingPage = () => {
 
@@ -18,7 +21,8 @@ const StakingPage = () => {
 
   const [coinAmount, setCoinAmount] = useState('')
 
-  const [smartContractPlan, setSmartContractPlan] = useState('')
+  const [smartContractPlan, setSmartContractPlan] = useState('0')
+  const [transactionHash, setTransactionHash] = useState('')
 
 
   const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -51,17 +55,31 @@ const StakingPage = () => {
 
 
 
+  // const checkAllowance = async () => {
+
+  //   if (!userAllowance) {
+  //     LoaderHelper.loaderStatus(true);
+
+  //   } else {
+  //     LoaderHelper.loaderStatus(false);
+
+  //     alert('checkAllowance')
+  //     const address = signer.getAddress()
+  //     let allowance = await token.allowance(address, stakingAddress)
+  //     allowance = parseInt(allowance, 10)
+
+  //     setUserAllowance(allowance);
+
+  //     return allowance
+  //   }
+  // }
 
   const checkAllowance = async () => {
-    alert('checkAllowance')
     const address = signer.getAddress()
     let allowance = await token.allowance(address, stakingAddress)
     allowance = parseInt(allowance, 10)
-
     setUserAllowance(allowance);
-
     return allowance
-
   }
 
 
@@ -78,10 +96,19 @@ const StakingPage = () => {
     let amountInHex = "0x" + amount.toString(16)
 
     const tx = await token.approve(stakingAddress, amountInHex)
-    console.log("approve tx: ", tx)
+    // $("#stake_modal").modal('hide');
+
+
+    setTransactionHash(tx?.hash)
+
+    console.log(tx?.hash, 'HashRaj');
+    console.log(tx?.from, 'FromRaj');
   }
 
   const stakeFunction = async (amount, poolId) => {
+
+    console.log(amount, 'amount');
+    console.log(poolId, 'poolId');
     const address = signer.getAddress()
 
     let decimal = await token.decimals()
@@ -95,11 +122,6 @@ const StakingPage = () => {
     const tx = await stake.stakeTokens(amountInHex, poolInHex)
     console.log("stake tx: ", tx)
   }
-
-
-
-
-
 
   return (
 
@@ -224,18 +246,17 @@ const StakingPage = () => {
               <div className="row g-1 mt-3">
                 <div className="col-md-12 m-auto px-1">
 
-                  {userAllowance > coinAmount ?
-
-                    <button type="button" class="btn btn-gradient w-100" onClick={() => approveStakingContract(smartContractPlan, coinAmount)}>
-                      <span className="m-auto" >Approve Stacking </span>
-                    </button> :
-
-                    <button type="button" class="btn btn-gradient w-100" onClick={() => stakeFunction(smartContractPlan, coinAmount)}>
+                  {userAllowance < coinAmount ?
+                    <button type="button" class="btn btn-gradient w-100" onClick={() => stakeFunction(coinAmount, smartContractPlan)} disabled={!userAllowance}>
                       <span className="m-auto" >Stake </span>
+                    </button>
+                    :
+                    <button type="button" class="btn btn-gradient w-100" onClick={() => approveStakingContract(coinAmount)} disabled={!userAllowance}>
+                      <span className="m-auto" >Approve Stacking </span>
                     </button>
 
                   }
-                  
+
                 </div>
               </div>
             </div>

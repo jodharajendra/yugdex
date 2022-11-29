@@ -42,6 +42,11 @@ const TradePage = () => {
   const [kycDetail, setkycDetail] = useState("");
   const token = localStorage.getItem("token");
 
+  const [inrCoin, setInrCoin] = useState('81');
+
+
+  console.log(inrCoin,'inrCoinRajendra');
+
   const getAllActivebuyOrder = async (fid, sid) => {
     await HomeService.getAllActiveOrderBuy(fid, sid).then(async result => {
       if (result?.success) {
@@ -428,8 +433,8 @@ const TradePage = () => {
                 </div>
                 <div class="tv-chart trade_card p-0 overflow-hidden">
                   <div class="containers">
-                    {/* <TVChartContainer symbol={`${selectedPairData?.fname}${selectedPairData?.sname}`} /> */}
-                    <TradingViewWidget theme={Themes.DARK} width={'100%'} height={'500'} symbol={`${selectedPairData?.fname}${selectedPairData?.sname}`} />
+                    <TVChartContainer symbol={`${selectedPairData?.fname}${selectedPairData?.sname}`} />
+                    {/* <TradingViewWidget theme={Themes.DARK} width={'100%'} height={'500'} symbol={`${selectedPairData?.fname}${selectedPairData?.sname}`} /> */}
                   </div>
                 </div>
               </div>

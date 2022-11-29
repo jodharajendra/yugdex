@@ -56,6 +56,7 @@ export const ApiConfig = {
   selectedChains: "generateadr",
   tradeReportDate:'tradeReportDate',
   sendOther:'sendOther',
+  getreceive:'getreceive',
   // ============URLs================
   baseUrl: `${appUrl}/`,
   appUrl: `${appUrl}/`,

@@ -47,7 +47,7 @@ export default class TVChartContainer extends React.PureComponent {
 		const widgetOptions = {
 			symbol: chartSymbol,
 			// BEWARE: no trailing slash is expected in feed URL
-			datafeed: new window.Datafeeds.UDFCompatibleDatafeed('http://18.223.79.14:3005'),
+			datafeed: new window.Datafeeds.UDFCompatibleDatafeed('https://api2.yugdex.com'),
 			interval: this.props.interval,
 			container: this.ref.current,
 			library_path: this.props.libraryPath,

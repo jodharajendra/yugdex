@@ -1068,6 +1068,23 @@ const HomeService = {
     return ApiCallPost(url, params, headers);
   }, */
 
+
+  getReciveOrder: async () => {
+    const token = localStorage.getItem("token");
+    const { baseWallet, getreceive } = ApiConfig;
+    const url = baseWallet + getreceive;
+    const params = {};
+
+    ConsoleLogs(TAG + ', getreceive', `url : ' + ${url}`);
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    };
+
+    return ApiCallPost(url, params, headers);
+  },
+
 };
 
 export default HomeService;

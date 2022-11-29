@@ -9,6 +9,7 @@ import filterFactory from "react-bootstrap-table2-filter";
 import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit';
+import HomeService from "../../../api/services/HomeService";
 const TransferHistory = () => {
 
     const { SearchBar } = Search;
@@ -24,7 +25,14 @@ const TransferHistory = () => {
 
     useEffect(() => {
         transHistory();
+        handleGetRecive();
     }, []);
+
+    const handleGetRecive = async () => {
+        await HomeService.getReciveOrder().then(async result => {
+        });
+    };
+
 
     const transHistory = async () => {
         await AuthService.getTransHistory().then(async result => {
