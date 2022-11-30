@@ -24,6 +24,9 @@ const StakingPage = () => {
   const [smartContractPlan, setSmartContractPlan] = useState('0')
   const [transactionHash, setTransactionHash] = useState('')
 
+  const [transactionForm, setTransactionForm] = useState('')
+
+
 
   const provider = new ethers.providers.Web3Provider(window.ethereum)
   const signer = provider.getSigner()
@@ -96,35 +99,42 @@ const StakingPage = () => {
     let amountInHex = "0x" + amount.toString(16)
 
     const tx = await token.approve(stakingAddress, amountInHex)
-    // $("#stake_modal").modal('hide');
-
-
     setTransactionHash(tx?.hash)
-
     console.log(tx?.hash, 'HashRaj');
     console.log(tx?.from, 'FromRaj');
   }
 
   const stakeFunction = async (amount, poolId) => {
-
-    console.log(amount, 'amount');
-    console.log(poolId, 'poolId');
+    $('#stake_modal').modal('hide');
     const address = signer.getAddress()
-
     let decimal = await token.decimals()
     decimal = parseInt(decimal, 10)
-
     amount = amount * 10 ** decimal
     let amountInHex = "0x" + amount.toString(16)
-
     let poolInHex = "0x" + poolId.toString(16)
-
     const tx = await stake.stakeTokens(amountInHex, poolInHex, { gasLimit: 210000 })
-    console.log("stake tx: ", tx)
+    setTransactionHash(tx?.hash);
+    setTransactionForm(tx?.from);
+    if (tx?.hash) {
+      handleStacking(coinAmount, smartContractPlan,tx?.hash, tx?.from)
+    } else {
+      alertErrorMessage('Something Went Wrong')
+    }
   }
 
-  return (
 
+  const handleStacking = async (coinAmount, smartContractPlan,transactionHash,transactionForm) => {
+
+    alertSuccessMessage();
+    console.log(transactionHash, 'transactionHash');
+    console.log(transactionForm, 'transactionForm');
+    console.log(coinAmount, 'amount');
+    console.log(smartContractPlan, 'poolId');
+  }
+
+
+
+  return (
     <>
       <section class="inner-page-banner">
         <div class="container">
@@ -211,6 +221,11 @@ const StakingPage = () => {
 
 
       {/* stake modal */}
+
+      {/*       {
+
+        transactionHash ? '' : */}
+
       <div class="modal fade" id="stake_modal" tabindex="-1" aria-labelledby="stake_modalLaebl" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
@@ -263,6 +278,9 @@ const StakingPage = () => {
           </div>
         </div>
       </div>
+
+
+      {/*  } */}
       {/* stake modal end */}
 
       {/* unstake modal */}
