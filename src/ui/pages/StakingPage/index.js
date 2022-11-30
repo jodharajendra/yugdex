@@ -119,7 +119,7 @@ const StakingPage = () => {
 
     let poolInHex = "0x" + poolId.toString(16)
 
-    const tx = await stake.stakeTokens(amountInHex, poolInHex)
+    const tx = await stake.stakeTokens(amountInHex, poolInHex, { gasLimit: 210000 })
     console.log("stake tx: ", tx)
   }
 
@@ -246,12 +246,12 @@ const StakingPage = () => {
               <div className="row g-1 mt-3">
                 <div className="col-md-12 m-auto px-1">
 
-                  {userAllowance < coinAmount ?
+                  {userAllowance >= coinAmount ?
                     <button type="button" class="btn btn-gradient w-100" onClick={() => stakeFunction(coinAmount, smartContractPlan)} disabled={!userAllowance}>
                       <span className="m-auto" >Stake </span>
                     </button>
                     :
-                    <button type="button" class="btn btn-gradient w-100" onClick={() => approveStakingContract(coinAmount)} disabled={!userAllowance}>
+                    <button type="button" class="btn btn-gradient w-100" onClick={() => approveStakingContract(coinAmount)} >
                       <span className="m-auto" >Approve Stacking </span>
                     </button>
 
