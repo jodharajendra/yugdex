@@ -122,6 +122,19 @@ const StakingPage = () => {
     }
   }
 
+  const unstakeFunction  = async (i) => {
+    const address = signer.getAddress()
+    let indexInHex = "0x" + i.toString(16)
+    const tx = await stake.unstake(indexInHex, { gasLimit: 210000 })
+  }
+
+  const details = async () => {
+    const address = signer.getAddress()
+    const details = await stake.details(address)
+    console.log("Details:" ,details)
+    return details
+  }
+
 
   const handleStacking = async (coinAmount, smartContractPlan,transactionHash,transactionForm) => {
 

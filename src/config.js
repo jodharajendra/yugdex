@@ -1,5 +1,5 @@
 export const address = {
-    stakeAddress: "0x62Fcb2c849f089c7c1f4166edA837c5C9C1cbd1f",
+    stakeAddress: "0xdd011E6Bb5015D9D5d611E79F825293109c53da8",
     token: "0x7fAbfe77A7995b869A646AB1Cb9eb4EDb8f315AB"
 }
 
