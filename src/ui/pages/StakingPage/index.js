@@ -81,6 +81,7 @@ const StakingPage = () => {
     const address = signer.getAddress()
     let allowance = await token.allowance(address, stakingAddress)
     allowance = parseInt(allowance, 10)
+    allowance = allowance/10**18
     setUserAllowance(allowance);
     return allowance
   }
@@ -116,6 +117,8 @@ const StakingPage = () => {
     let decimal = await token.decimals()
     decimal = parseInt(decimal, 10)
     amount = amount * 10 ** decimal
+    console.log(amount, "amount");
+    console.log(poolId, "pool");
     let amountInHex = "0x" + amount.toString(16)
     let poolInHex = "0x" + poolId.toString(16)
     const tx = await stake.stakeTokens(amountInHex, poolInHex, { gasLimit: 210000 })
