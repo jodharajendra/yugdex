@@ -81,7 +81,7 @@ const StakingPage = () => {
     const address = signer.getAddress()
     let allowance = await token.allowance(address, stakingAddress)
     allowance = parseInt(allowance, 10)
-    allowance = allowance/10**18
+    allowance = allowance / 10 ** 18
     setUserAllowance(allowance);
     return allowance
   }
@@ -121,7 +121,9 @@ const StakingPage = () => {
     console.log(poolId, "pool");
     let amountInHex = "0x" + amount.toString(16)
     let poolInHex = "0x" + poolId.toString(16)
-    const tx = await stake.stakeTokens(amountInHex, poolInHex, { gasLimit: 210000 })
+    const tx = await stake.stakeTokens(amountInHex, poolInHex, { gasLimit: 300000 })
+
+
     setTransactionHash(tx?.hash);
     setTransactionForm(tx?.from);
     if (tx?.hash) {
@@ -142,6 +144,7 @@ const StakingPage = () => {
   const details = async () => {
     const address = signer.getAddress()
     const details = await stake.details(address)
+    
     console.log(details, "Details:")
     return details
   }
@@ -149,15 +152,15 @@ const StakingPage = () => {
 
   useEffect(() => {
     details();
-  })
+  },[])
 
   const handleStacking = async (coinAmount, smartContractPlan, transactionHash, transactionForm) => {
 
-    alertSuccessMessage();
     console.log(transactionHash, 'transactionHash');
     console.log(transactionForm, 'transactionForm');
     console.log(coinAmount, 'amount');
     console.log(smartContractPlan, 'poolId');
+
   }
 
 
@@ -279,25 +282,41 @@ const StakingPage = () => {
               </div>
               <div className="form-group position-relative" >
                 <label>Enter Amonut</label>
-                <input type="text" className="form-control" placeholder="Enter Amount to Unstake" value={coinAmount} onChange={(e) => setCoinAmount(e.target.value)} />
+
+
+                {/* {
+                  coinAmount >= 30000 ? 'Maximum  Limit is 30000' : */}
+
+
+                <input type="text" className="form-control" placeholder="Enter Amount to Unstake"
+                  value={coinAmount} onChange={(e) => setCoinAmount(e.target.value)} />
+                {/* } */}
+
               </div>
               <small className="d-flex-between mt-2 mb-4" >
                 <span>
                   Minimum to Stack
                 </span>
-                <p className="mb-0 fw-bold">0.000001 YUG</p>
+                <p className="mb-0 fw-bold">3000 YUG</p>
               </small>
               <div className="row g-1 mt-3">
                 <div className="col-md-12 m-auto px-1">
 
-                  {userAllowance >= coinAmount ?
-                    <button type="button" class="btn btn-gradient w-100" onClick={() => stakeFunction(coinAmount, smartContractPlan)} disabled={!userAllowance}>
-                      <span className="m-auto" >Stake </span>
-                    </button>
-                    :
-                    <button type="button" class="btn btn-gradient w-100" onClick={() => approveStakingContract(coinAmount)} >
-                      <span className="m-auto" >Approve Stacking </span>
-                    </button>
+                  {
+
+                    coinAmount > 15000000 || coinAmount < 3000 ? <span style={{color:'red', fontSize:'14px' }}> Maximum Stacking 15000000 or Minimum Stacking 3000 Yug 
+                    </span> :
+
+
+
+                      userAllowance >= coinAmount ?
+                        <button type="button" class="btn btn-gradient w-100" onClick={() => stakeFunction(coinAmount, smartContractPlan)} disabled={!userAllowance}>
+                          <span className="m-auto" >Stake </span>
+                        </button>
+                        :
+                        <button type="button" class="btn btn-gradient w-100" onClick={() => approveStakingContract(coinAmount)} >
+                          <span className="m-auto" >Approve Stacking </span>
+                        </button>
 
                   }
 
