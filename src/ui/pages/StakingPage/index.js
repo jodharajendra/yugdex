@@ -5,7 +5,7 @@ import { address, abi } from "../../../config";
 import { $ } from "react-jquery-plugin";
 import LoaderHelper from "../../../customComponent/Loading/LoaderHelper";
 import { alertErrorMessage, alertSuccessMessage, alertSuccessMessageTrade } from "../../../customComponent/CustomAlertMessage";
-import { useProvider } from "wagmi";
+import { useSigner } from "wagmi";
 
 const StakingPage = () => {
 
@@ -27,9 +27,10 @@ const StakingPage = () => {
 
   const [transactionForm, setTransactionForm] = useState('')
 
-  const wagmiProvider = useProvider()
+  const { data: _signer } = useSigner()
 
-  const provider = new ethers.providers.Web3Provider(wagmiProvider)
+  // const provider = new ethers.providers.Web3Provider(_signer.provider)
+  const provider = new ethers.providers.Web3Provider(window.ethereum)
   const signer = provider.getSigner()
 
   const stakingAddress = address.stakeAddress
