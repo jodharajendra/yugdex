@@ -29,9 +29,9 @@ const StakingPage = () => {
 
   const { data: _signer } = useSigner()
 
-  // const provider = new ethers.providers.Web3Provider(_signer.provider)
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
-  const signer = provider.getSigner()
+  // const provider = new ethers.providers.Web3Provider(_provider)
+  // const provider = new ethers.providers.Web3Provider(window.ethereum)
+  const signer = _signer
 
   const stakingAddress = address.stakeAddress
   const stakingAbi = abi.stakeAbi
@@ -85,12 +85,12 @@ const StakingPage = () => {
     allowance = parseInt(allowance, 10)
     allowance = allowance / 10 ** 18
     setUserAllowance(allowance);
-    return allowance
+    console.log("address: ",address)
+    // return allowance
   }
-
-
+  
+  
   console.log(userAllowance, 'userAllowance');
-
 
   const approveStakingContract = async (amount) => {
     $('#stake_modal').modal('hide');
