@@ -6,8 +6,12 @@ import { $ } from "react-jquery-plugin";
 import LoaderHelper from "../../../customComponent/Loading/LoaderHelper";
 import { alertErrorMessage, alertSuccessMessage, alertSuccessMessageTrade } from "../../../customComponent/CustomAlertMessage";
 import { useSigner } from "wagmi";
+import AuthService from "../../../api/services/AuthService";
 
 const StakingPage = () => {
+
+  // const userId = localStorage.getItem("userId");
+
 
   const [selectedBuyPercent, setSelectedBuyPercent] = useState(25);
   const [selectedSellPercent, setSelectedSellPercent] = useState(25);
@@ -23,9 +27,14 @@ const StakingPage = () => {
   const [coinAmount, setCoinAmount] = useState('')
 
   const [smartContractPlan, setSmartContractPlan] = useState('0')
-  const [transactionHash, setTransactionHash] = useState('')
 
+  const [transactionHash, setTransactionHash] = useState('')
   const [transactionForm, setTransactionForm] = useState('')
+  const [transactionTo, setTransactionTo] = useState('')
+
+  const [stackingDetails, setStackingDetails] = useState('')
+
+
 
   const { data: _signer } = useSigner()
 
@@ -59,38 +68,21 @@ const StakingPage = () => {
   };
 
 
-
-  // const checkAllowance = async () => {
-
-  //   if (!userAllowance) {
-  //     LoaderHelper.loaderStatus(true);
-
-  //   } else {
-  //     LoaderHelper.loaderStatus(false);
-
-  //     alert('checkAllowance')
-  //     const address = signer.getAddress()
-  //     let allowance = await token.allowance(address, stakingAddress)
-  //     allowance = parseInt(allowance, 10)
-
-  //     setUserAllowance(allowance);
-
-  //     return allowance
-  //   }
-  // }
-
   const checkAllowance = async () => {
+
+
+
     const address = signer.getAddress()
     let allowance = await token.allowance(address, stakingAddress)
     allowance = parseInt(allowance, 10)
     allowance = allowance / 10 ** 18
     setUserAllowance(allowance);
-    console.log("address: ",address)
+    // console.log("address: ", address)
     // return allowance
   }
-  
-  
-  console.log(userAllowance, 'userAllowance');
+
+
+  // console.log(userAllowance, 'userAllowance');
 
   const approveStakingContract = async (amount) => {
     $('#stake_modal').modal('hide');
@@ -105,8 +97,10 @@ const StakingPage = () => {
     const tx = await token.approve(stakingAddress, amountInHex)
     setTransactionHash(tx?.hash);
     setTransactionForm(tx?.from);
+    setTransactionTo(tx?.to);
+
     if (tx?.hash) {
-      handleStacking(coinAmount, smartContractPlan, tx?.hash, tx?.from)
+      handleStacking(coinAmount, smartContractPlan, tx?.hash, tx?.from, tx?.to)
     } else {
       alertErrorMessage('Something Went Wrong')
     }
@@ -119,8 +113,8 @@ const StakingPage = () => {
     let decimal = await token.decimals()
     decimal = parseInt(decimal, 10)
     amount = amount * 10 ** decimal
-    console.log(amount, "amount");
-    console.log(poolId, "pool");
+    // console.log(amount, "amount");
+    // console.log(poolId, "pool");
     let amountInHex = "0x" + amount.toString(16)
     let poolInHex = "0x" + poolId.toString(16)
     const tx = await stake.stakeTokens(amountInHex, poolInHex, { gasLimit: 300000 })
@@ -128,8 +122,9 @@ const StakingPage = () => {
 
     setTransactionHash(tx?.hash);
     setTransactionForm(tx?.from);
+    setTransactionTo(tx?.to);
     if (tx?.hash) {
-      handleStacking(coinAmount, smartContractPlan, tx?.hash, tx?.from)
+      handleStacking(coinAmount, smartContractPlan, tx?.hash, tx?.from, tx?.to)
     } else {
       alertErrorMessage('Something Went Wrong')
     }
@@ -146,7 +141,7 @@ const StakingPage = () => {
   const details = async () => {
     const address = signer.getAddress()
     const details = await stake.details(address)
-    
+
     console.log(details, "Details:")
     return details
   }
@@ -154,16 +149,44 @@ const StakingPage = () => {
 
   useEffect(() => {
     details();
-  },[])
+    handleStackingDetails();
+  }, [])
 
-  const handleStacking = async (coinAmount, smartContractPlan, transactionHash, transactionForm) => {
-
-    console.log(transactionHash, 'transactionHash');
-    console.log(transactionForm, 'transactionForm');
-    console.log(coinAmount, 'amount');
-    console.log(smartContractPlan, 'poolId');
-
+  const handleStacking = async (coinAmount, smartContractPlan, transactionHash, transactionForm, transactionTo) => {
+    await AuthService.addStackingCoin(coinAmount, smartContractPlan, transactionHash, transactionForm, transactionTo).then(async result => {
+      if (result.msg === 'Your Stacking Placed Successfully!!') {
+        try {
+          alertSuccessMessage(result.msg);
+        } catch (error) {
+          alertErrorMessage(error);
+          //console.log('error', `${error}`);
+        }
+      } else {
+        alertErrorMessage(result.msg);
+      }
+    });
   }
+
+
+  const handleStackingDetails = async () => {
+    await AuthService.stackingList().then(async result => {
+      if (result.success) {
+        try {
+          alertSuccessMessage(result.msg);
+          setStackingDetails(result?.success)
+        } catch (error) {
+          alertErrorMessage(error);
+          //console.log('error', `${error}`);
+        }
+      } else {
+        alertErrorMessage(result.msg);
+      }
+    });
+  }
+
+
+  console.log(stackingDetails, 'stackingDetails');
+
 
 
 
@@ -260,74 +283,83 @@ const StakingPage = () => {
 
         transactionHash ? '' : */}
 
+
+
+
+
       <div class="modal fade" id="stake_modal" tabindex="-1" aria-labelledby="stake_modalLaebl" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header flex-column px-8">
-              <h3 class="modal-title" id="placeBitLaebl">Stack Yugcoin</h3>
-              <button type="button" class="btn-custom-closer" data-bs-dismiss="modal" aria-label="Close"><i
-                class="ri-close-fill"></i></button>
-            </div>
-            <div class="modal-body px-8 py-5">
-              <small className="text-end d-block mb-2" >
-                <span> Available Balance: </span>
-                <span className="mb-0 fw-bold">0.000001 YUG</span>
-              </small>
-              <div className="form-group position-relative mb-4" >
-                <label>Select plan</label>
-                <select className="input-select" value={smartContractPlan} onChange={(e) => setSmartContractPlan(e.target.value)}>
-                  <option value='0'>Plan 1</option>
-                  <option value='1'>Plan 2</option>
-                  <option value='2'>Plan 3</option>
-                  <option value='3'>Plan 4</option>
-                </select>
-              </div>
-              <div className="form-group position-relative" >
-                <label>Enter Amonut</label>
+          {
+            userAllowance === '' ? <h5>Wait for Allowance</h5> :
+              <div class="modal-content">
+                <div class="modal-header flex-column px-8">
+                  <h3 class="modal-title" id="placeBitLaebl">Stack Yugcoin</h3>
+                  <button type="button" class="btn-custom-closer" data-bs-dismiss="modal" aria-label="Close"><i
+                    class="ri-close-fill"></i></button>
+                </div>
+                <div class="modal-body px-8 py-5">
+                  <small className="text-end d-block mb-2" >
+                    <span> Available Balance: </span>
+                    <span className="mb-0 fw-bold">0.000001 YUG</span>
+                  </small>
+                  <div className="form-group position-relative mb-4" >
+                    <label>Select plan</label>
+                    <select className="input-select" value={smartContractPlan} onChange={(e) => setSmartContractPlan(e.target.value)}>
+                      <option value='0'>Plan 1</option>
+                      <option value='1'>Plan 2</option>
+                      <option value='2'>Plan 3</option>
+                      <option value='3'>Plan 4</option>
+                    </select>
+                  </div>
+                  <div className="form-group position-relative" >
+                    <label>Enter Amonut</label>
 
 
-                {/* {
+                    {/* {
                   coinAmount >= 30000 ? 'Maximum  Limit is 30000' : */}
 
 
-                <input type="text" className="form-control" placeholder="Enter Amount to Unstake"
-                  value={coinAmount} onChange={(e) => setCoinAmount(e.target.value)} />
-                {/* } */}
+                    <input type="text" className="form-control" placeholder="Enter Amount to Unstake"
+                      value={coinAmount} onChange={(e) => setCoinAmount(e.target.value)} />
+                    {/* } */}
 
-              </div>
-              <small className="d-flex-between mt-2 mb-4" >
-                <span>
-                  Minimum to Stack
-                </span>
-                <p className="mb-0 fw-bold">3000 YUG</p>
-              </small>
-              <div className="row g-1 mt-3">
-                <div className="col-md-12 m-auto px-1">
+                  </div>
+                  <small className="d-flex-between mt-2 mb-4" >
+                    <span>
+                      Minimum to Stack
+                    </span>
+                    <p className="mb-0 fw-bold">3000 YUG</p>
+                  </small>
+                  <div className="row g-1 mt-3">
+                    <div className="col-md-12 m-auto px-1">
 
-                  {
+                      {
 
-                    coinAmount > 15000000 || coinAmount < 3000 ? <span style={{color:'red', fontSize:'14px' }}> Maximum Stacking 15000000 or Minimum Stacking 3000 Yug 
-                    </span> :
+                        coinAmount > 15000000 || coinAmount < 3000 ? <span style={{ color: 'red', fontSize: '14px' }}> Maximum Stacking 15000000 or Minimum Stacking 3000 Yug
+                        </span> :
 
 
 
-                      userAllowance >= coinAmount ?
-                        <button type="button" class="btn btn-gradient w-100" onClick={() => stakeFunction(coinAmount, smartContractPlan)} disabled={!userAllowance}>
-                          <span className="m-auto" >Stake </span>
-                        </button>
-                        :
-                        <button type="button" class="btn btn-gradient w-100" onClick={() => approveStakingContract(coinAmount)} >
-                          <span className="m-auto" >Approve Stacking </span>
-                        </button>
+                          userAllowance >= coinAmount ?
+                            <button type="button" class="btn btn-gradient w-100" onClick={() => stakeFunction(coinAmount, smartContractPlan)} disabled={!userAllowance}>
+                              <span className="m-auto" >Stake </span>
+                            </button>
+                            :
+                            <button type="button" class="btn btn-gradient w-100" onClick={() => approveStakingContract(coinAmount)} >
+                              <span className="m-auto" >Approve Stacking </span>
+                            </button>
 
-                  }
+                      }
 
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+          }
         </div>
       </div>
+
+
 
 
       {/*  } */}

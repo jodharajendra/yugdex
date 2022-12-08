@@ -57,6 +57,10 @@ export const ApiConfig = {
   tradeReportDate:'tradeReportDate',
   sendOther:'sendOther',
   getreceive:'getreceive',
+  stackcoin:'stackcoin',
+  getUserStacking:'getUserStacking',
+
+
   // ============URLs================
   baseUrl: `${appUrl}/`,
   appUrl: `${appUrl}/`,
@@ -66,6 +70,8 @@ export const ApiConfig = {
   baseHelp: `${appUrl}/help/`,
   baseWallet: `${appUrl}/wallet/`,
   baseOrder: `${appUrl}/binance/`,
+  baseStacking: `${appUrl}/stacking/`,
+
 /*   webSocketUrl: 'ws://128.199.17.151:3004', */
   webSocketUrl: 'wss://api.yugdex.com',
 

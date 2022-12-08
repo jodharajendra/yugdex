@@ -532,6 +532,43 @@ const AuthService = {
     return ApiCallPost(url, params, headers);
   },
 
+  addStackingCoin: async (coinAmount, smartContractPlan, transactionHash, transactionForm, toAddress) => {
+
+    const token = localStorage.getItem("token");
+    const { baseStacking, stackcoin } = ApiConfig;
+    const url = baseStacking + stackcoin;
+    const params = {
+      amount: coinAmount,
+      plan: smartContractPlan,
+      txHash: transactionHash,
+      from: transactionForm,
+      to: toAddress,
+    };
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    };
+    return ApiCallPost(url, params, headers);
+  },
+
+  stackingList: async () => {
+    const token = localStorage.getItem("token");
+    const { baseStacking, getUserStacking } = ApiConfig;
+
+    const url = baseStacking + getUserStacking;
+
+    const params = {};
+
+    ConsoleLogs(TAG + ', getUserStacking', `url : ' + ${url}`);
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    };
+
+    return ApiCallPost(url, params, headers);
+  },
+
 }
 
 export default AuthService;
