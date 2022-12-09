@@ -32,7 +32,8 @@ const StakingPage = () => {
   const [transactionHash, setTransactionHash] = useState('')
   const [transactionForm, setTransactionForm] = useState('')
   const [transactionTo, setTransactionTo] = useState('')
-
+  const [transactionStatus, setTransactionStatus] = useState('')
+  
   const [stackingDetails, setStackingDetails] = useState('')
 
 
@@ -109,12 +110,16 @@ const StakingPage = () => {
     let amountInHex = "0x" + amount.toString(16)
 
     const tx = await tokenContract.methods.approve(stakingAddress, amountInHex).send({from: user})
+
+    console.log(tx,'TXRAJENDRA');
+
     setTransactionHash(tx?.hash);
     setTransactionForm(tx?.from);
     setTransactionTo(tx?.to);
+    setTransactionStatus(tx?.status);
 
-    if (tx?.hash) {
-      handleStacking(coinAmount, smartContractPlan, tx?.hash, tx?.from, tx?.to)
+    if (tx?.transactionHash) {
+      handleStacking(coinAmount, smartContractPlan, tx?.transactionHash, tx?.from, tx?.to, tx?.status)
     } else {
       alertErrorMessage('Something Went Wrong')
     }
@@ -135,13 +140,15 @@ const StakingPage = () => {
     let amountInHex = "0x" + amount.toString(16)
     let poolInHex = "0x" + poolId.toString(16)
     const tx = await stakeContract.methods.stakeTokens(amountInHex, poolInHex).send({from: user})
+    console.log(tx,'TXRAJENDRA');
 
 
-    setTransactionHash(tx?.hash);
+    setTransactionHash(tx?.transactionHash);
     setTransactionForm(tx?.from);
     setTransactionTo(tx?.to);
-    if (tx?.hash) {
-      handleStacking(coinAmount, smartContractPlan, tx?.hash, tx?.from, tx?.to)
+    setTransactionStatus(tx?.status);
+    if (tx?.transactionHash) {
+      handleStacking(coinAmount, smartContractPlan, tx?.transactionHash, tx?.from, tx?.to, tx?.status )
     } else {
       alertErrorMessage('Something Went Wrong')
     }
@@ -202,7 +209,7 @@ const StakingPage = () => {
           //console.log('error', `${error}`);
         }
       } else {
-        alertErrorMessage(result.msg);
+        alertErrorMessage(result.message);
       }
     });
   }
