@@ -1,12 +1,13 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import React, { useEffect, useState } from "react";
-import { ethers } from "ethers";
+// import { ethers } from "ethers";
 import { address, abi } from "../../../config";
 import { $ } from "react-jquery-plugin";
 import LoaderHelper from "../../../customComponent/Loading/LoaderHelper";
 import { alertErrorMessage, alertSuccessMessage, alertSuccessMessageTrade } from "../../../customComponent/CustomAlertMessage";
-import { useSigner } from "wagmi";
+import { useProvider, useSigner } from "wagmi";
 import AuthService from "../../../api/services/AuthService";
+import Web3 from "web3";
 
 const StakingPage = () => {
 
@@ -36,11 +37,13 @@ const StakingPage = () => {
 
 
 
+  const signer = useProvider()
   const { data: _signer } = useSigner()
 
   // const provider = new ethers.providers.Web3Provider(_provider)
   // const provider = new ethers.providers.Web3Provider(window.ethereum)
-  const signer = _signer
+
+  const web3 = new Web3((_signer?.provider).provider)
 
   const stakingAddress = address.stakeAddress
   const stakingAbi = abi.stakeAbi
@@ -48,9 +51,11 @@ const StakingPage = () => {
   const tokenAddress = address.token
   const tokenAbi = abi.tokenAbi
 
-  const token = new ethers.Contract(tokenAddress, tokenAbi, signer)
-  const stake = new ethers.Contract(stakingAddress, stakingAbi, signer)
+  // const token = new ethers.Contract(tokenAddress, tokenAbi, signer)
+  // const stake = new ethers.Contract(stakingAddress, stakingAbi, signer)
 
+  const stakeContract = new web3.eth.Contract(stakingAbi, stakingAddress)
+  const tokenContract = new web3.eth.Contract(tokenAbi, tokenAddress)
 
   const selectBuyPercent = (percent) => {
     setSelectedBuyPercent(percent);
@@ -69,16 +74,21 @@ const StakingPage = () => {
 
 
   const checkAllowance = async () => {
+    try {
+      let accounts = await web3.eth.getAccounts()
+      let user = accounts[0]
 
-
-
-    const address = signer.getAddress()
-    let allowance = await token.allowance(address, stakingAddress)
-    allowance = parseInt(allowance, 10)
-    allowance = allowance / 10 ** 18
-    setUserAllowance(allowance);
-    // console.log("address: ", address)
-    // return allowance
+      // const address = signer.getAddress()
+      let allowance = await tokenContract.methods.allowance(user, stakingAddress).call()
+      // allowance = parseInt(allowance, 10)
+      allowance = allowance / 10 ** 18
+      setUserAllowance(allowance);
+      // console.log("address: ", address)
+      // return allowance
+    } catch (error) {
+      console.log(error);
+    }
+    
   }
 
 
@@ -86,15 +96,18 @@ const StakingPage = () => {
 
   const approveStakingContract = async (amount) => {
     $('#stake_modal').modal('hide');
-    const address = signer.getAddress()
+    // const address = signer.getAddress()
+    let accounts = await web3.eth.getAccounts()
+    let user = accounts[0]
 
-    let decimal = await token.decimals()
-    decimal = parseInt(decimal, 10)
+
+    let decimal = await tokenContract.methods.decimals().call()
+    // decimal = parseInt(decimal, 10)
 
     amount = amount * 10 ** decimal
     let amountInHex = "0x" + amount.toString(16)
 
-    const tx = await token.approve(stakingAddress, amountInHex)
+    const tx = await tokenContract.methods.approve(stakingAddress, amountInHex).send({from: user})
     setTransactionHash(tx?.hash);
     setTransactionForm(tx?.from);
     setTransactionTo(tx?.to);
@@ -109,15 +122,18 @@ const StakingPage = () => {
 
   const stakeFunction = async (amount, poolId) => {
     $('#stake_modal').modal('hide');
-    const address = signer.getAddress()
-    let decimal = await token.decimals()
-    decimal = parseInt(decimal, 10)
+    // const address = signer.getAddress()
+    let accounts = await web3.eth.getAccounts()
+    let user = accounts[0]
+
+    let decimal = await tokenContract.methods.decimals().call()
+    // decimal = parseInt(decimal, 10)
     amount = amount * 10 ** decimal
     // console.log(amount, "amount");
     // console.log(poolId, "pool");
     let amountInHex = "0x" + amount.toString(16)
     let poolInHex = "0x" + poolId.toString(16)
-    const tx = await stake.stakeTokens(amountInHex, poolInHex, { gasLimit: 300000 })
+    const tx = await stakeContract.methods.stakeTokens(amountInHex, poolInHex).send({from: user})
 
 
     setTransactionHash(tx?.hash);
@@ -131,16 +147,22 @@ const StakingPage = () => {
   }
 
   const unstakeFunction = async (i) => {
-    const address = signer.getAddress()
+    // const address = signer.getAddress()
+    let accounts = await web3.eth.getAccounts()
+    let user = accounts[0]
+
     let indexInHex = "0x" + i.toString(16)
-    const tx = await stake.unstake(indexInHex, { gasLimit: 210000 })
+    const tx = await stakeContract.methods.unstake(indexInHex).send({from: user})
 
     console.log(tx, 'txtxUnstake');
   }
 
   const details = async () => {
-    const address = signer.getAddress()
-    const details = await stake.details(address)
+    // const address = signer.getAddress()
+    let accounts = await web3.eth.getAccounts()
+    let user = accounts[0]
+
+    const details = await stakeContract.methods.details(user).call()
 
     console.log(details, "Details:")
     return details
