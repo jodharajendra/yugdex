@@ -40,12 +40,19 @@ const StakingPage = () => {
 
   const signer = useProvider()
   const { data: _signer } = useSigner()
+  let web3;
 
   // const provider = new ethers.providers.Web3Provider(_provider)
   // const provider = new ethers.providers.Web3Provider(window.ethereum)
 
-  // const web3 = new Web3((_signer?.provider))
-  const web3 = new Web3(window.ethereum)
+  if(window.ethereum){
+    
+    web3 = new Web3(window.ethereum)
+  }
+  else{
+    
+    web3 = new Web3((_signer?.provider))
+  }
 
   const stakingAddress = address.stakeAddress
   const stakingAbi = abi.stakeAbi
