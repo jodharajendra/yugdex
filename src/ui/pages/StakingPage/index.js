@@ -209,7 +209,7 @@ const StakingPage = () => {
     await AuthService.stackingList().then(async result => {
       if (result.success) {
         try {
-          alertSuccessMessage(result.msg);
+          // alertSuccessMessage(result.msg);
           setStackingDetails(result?.success)
         } catch (error) {
           alertErrorMessage(error);
@@ -222,7 +222,7 @@ const StakingPage = () => {
   }
 
 
-  console.log(stackingDetails, 'stackingDetails');
+  // console.log(stackingDetails, 'stackingDetails');
 
 
 
