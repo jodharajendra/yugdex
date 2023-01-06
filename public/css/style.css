@@ -5810,7 +5810,9 @@ img.main_img {
 
 .td_stack {
   line-height: 1.2;
+  font-size: 16px;
 }
+
 
 .avatar-info img {
   width: 46px;
