@@ -8591,3 +8591,11 @@ body.theme-light .form-field-wrapper .table-responsive table,
 [data-rk] ._1ckjpok1 {
   border-radius: 10px !important;
 }
+
+.h-auto {
+  height: auto !important;
+  min-height: unset;
+}
+.bidder_action .btn-small {
+    border-radius: 5px !important;
+}

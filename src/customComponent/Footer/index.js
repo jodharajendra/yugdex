@@ -70,7 +70,8 @@ const Footer = () => {
     </div>
     <div className="copyright text-center">
       <div className="container">
-        <p>Copyright © 2022 All Rights Reserved.</p>
+        <p>Copyright © 2022 All Rights Reserved... Designed & developed by <a href="https://appinop.com/" target="_blank"
+                style={{ textDecoration: 'revert',color:'#009cea' }}>Appinop Technologies</a></p>
       </div>
     </div>
   </footer>
