@@ -30,6 +30,9 @@ const StakingPage = () => {
   const [allStackingBalance, setsAllStackingBalance] = useState([])
   const [allStackingReward, setsAllStackingReward] = useState([])
   const [stakingDate, SetStakingDate] = useState([]);
+  const [totalRamt, SetTotalRamt] = useState([]);
+  const [totalEarnAmnt, SetTotalEarnAmnt] = useState([]);
+  const [poolId, SetPoolId] = useState([]);
 
 
 
@@ -176,15 +179,20 @@ const StakingPage = () => {
     setsAllStackingBalance(details[0])
     setsAllStackingReward(details[1])
     SetStakingDate(details[2])
+    SetTotalRamt(details?.amount)
+    SetTotalEarnAmnt(details?.earnedAmt)
+    SetPoolId(details?.pool)
     return details
   }
 
 
-  // console.log(allDetails, "Details:")
+  console.log(poolId[2], "pollId:")
   // let stackingBalance = allDetails[0]
   // let totalRewardss = allDetails[1]
   // let date = allDetails[2]
   // let blankArr = []
+
+
 
 
 
@@ -223,6 +231,25 @@ const StakingPage = () => {
     });
   }
 
+  let totalAmnt = 0;
+
+  for (let i = 0; i < totalRamt.length; i++) {
+    totalAmnt += totalRamt[i] / 10 ** 18;
+  }
+
+  let totalpool = [];
+
+  for (let i = 0; i < poolId.length; i++) {
+    totalpool.push(poolId[i]);
+  }
+
+  let totalEarndAmnt = 0;
+
+  for (let i = 0; i < totalEarnAmnt.length; i++) {
+    totalEarndAmnt += totalEarnAmnt[i] / 10 ** 18;
+  }
+
+  console.log(totalEarndAmnt, 'totalEarndAmnt');
 
   let arr = [];
   let arrPlan = [];
@@ -249,7 +276,7 @@ const StakingPage = () => {
 
 
 
-  //   console.log(item,'item')
+  console.log(totalpool, 'totalpool')
 
   // )}
 
@@ -285,12 +312,12 @@ const StakingPage = () => {
                   <span> TOTAL STAKING BALANCE: </span>
                   <div class="d-flex-center ms-1">
                     {/* <strong> <span class="text-white"> $ {parseFloat(stakingBalance / 10 ** 18)}</span></strong> */}
-                    <strong> <span class="text-white">  </span></strong>
+                    <strong> <span class="text-white"> {totalAmnt}  </span></strong>
                   </div>
                   <div class="d-flex-between ms-3">
                     <span>TOTAL REWARDS: </span>
                     <div class="d-flex-center ms-1">
-                      <span class="text-white"><strong>  </strong></span>
+                      <span class="text-white"><strong> {totalEarndAmnt} </strong></span>
                     </div>
                   </div>
 
@@ -333,13 +360,15 @@ const StakingPage = () => {
                   <td className="text-start">
                     <div class="td_stack justify-content-center div_info  py-2">
                       {
-                        allStackingBalance.length > 0
-                          ? allStackingBalance.map((item) => (
-
-                            <div>1.00%</div>
+                        totalpool.length > 0
+                          ? totalpool.map((item) => (
+                            <div>
+                              {item == 0 ? '6%' : item == 1 ? '10%' : item == 2 ? '13%' : item == '3' ? '17%' :
+                                null}
+                            </div>
 
                           ))
-                          : '0'
+                          : null
                       }
                     </div>
                   </td>
